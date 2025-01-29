@@ -4,9 +4,9 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace TweetCopycat.Data
 {
-    public class DbContext : IdentityDbContext
+    public class AppDbContext : IdentityDbContext
     {
-        public DbContext(DbContextOptions<DbContext>options): base(options) 
+        public AppDbContext(DbContextOptions<AppDbContext>options): base(options) 
         {
 
         }

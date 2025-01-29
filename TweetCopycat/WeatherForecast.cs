@@ -1,3 +1,4 @@
+/*
 namespace TweetCopycat
 {
     public class WeatherForecast
@@ -11,3 +12,4 @@ namespace TweetCopycat
         public string? Summary { get; set; }
     }
 }
+*/
