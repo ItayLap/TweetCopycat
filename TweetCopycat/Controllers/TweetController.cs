@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TweetCopycat.Data;
+using Microsoft.EntityFrameworkCore;
+using TweetCopycat.Models;
 
 namespace TweetCopycat.Controllers
 {
@@ -6,16 +9,35 @@ namespace TweetCopycat.Controllers
     [ApiController]
     public class TweetController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult GetAllTweets()
+        private readonly AppDbContext _Context;
+
+        public TweetController(AppDbContext context)
         {
-            return Ok("Retrieve all tweets here.");
+            _Context = context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllTweets()
+        {
+            var tweets = await _Context.Tweets.Include(t => t.User).ToListAsync();
+            return Ok(tweets);
         }
 
         [HttpPost]
-        public IActionResult PostTweet()
+        public async Task<IActionResult> PostTweet([FromBody] TweetModel tweet)
         {
-            return Ok("a new tweet has been posted");
+            if (tweet == null || string.IsNullOrEmpty(tweet.Content))
+            {
+                return BadRequest("Invalid tweet data");
+            }
+            tweet.UserId = User.FindFirst("sub")?.Value;
+            tweet.CreatedAt = DateTime.UtcNow;
+
+            _Context.Tweets.Add(tweet);
+            await _Context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetAllTweets),new { id = tweet.Id }, tweet);
+
         }
 
     }
