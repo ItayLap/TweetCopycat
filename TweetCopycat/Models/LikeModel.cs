@@ -2,15 +2,17 @@
 
 namespace TweetCopycat.Models
 {
-    public class TweetModel
+    public class LikeModel
     {
         public int Id { get; set; }
-        public string UserId {  get; set; }
-        public string Content {  get; set; }
-        public bool IsRead {  get; set; }
+        public string UserId { get; set; }
+        public int TweetId {  get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public ICollection<LikeModel> Like { get; set; } = new List<LikeModel>();
+
         [ForeignKey("UserId")]
         public virtual UserModel User { get; set; }
+
+        [ForeignKey("TweetId")]
+        public virtual TweetModel Tweet { get; set; }
     }
 }
