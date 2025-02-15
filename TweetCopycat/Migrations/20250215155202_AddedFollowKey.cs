@@ -5,7 +5,7 @@
 namespace TweetCopycat.Migrations
 {
     /// <inheritdoc />
-    public partial class RemoveLike : Migration
+    public partial class AddedFollowKey : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

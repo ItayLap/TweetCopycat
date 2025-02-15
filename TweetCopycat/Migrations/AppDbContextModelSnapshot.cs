@@ -155,6 +155,31 @@ namespace TweetCopycat.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("TweetCopycat.Models.FollowModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FollowerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FollowingId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowerId");
+
+                    b.HasIndex("FollowingId");
+
+                    b.ToTable("Follows");
+                });
+
             modelBuilder.Entity("TweetCopycat.Models.LikeModel", b =>
                 {
                     b.Property<int>("Id")
@@ -173,11 +198,16 @@ namespace TweetCopycat.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("UserModelId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TweetId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserModelId");
 
                     b.ToTable("Likes");
                 });
@@ -335,19 +365,42 @@ namespace TweetCopycat.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TweetCopycat.Models.FollowModel", b =>
+                {
+                    b.HasOne("TweetCopycat.Models.UserModel", "Follower")
+                        .WithMany()
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("TweetCopycat.Models.UserModel", "Following")
+                        .WithMany()
+                        .HasForeignKey("FollowingId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Follower");
+
+                    b.Navigation("Following");
+                });
+
             modelBuilder.Entity("TweetCopycat.Models.LikeModel", b =>
                 {
                     b.HasOne("TweetCopycat.Models.TweetModel", "Tweet")
                         .WithMany("Like")
                         .HasForeignKey("TweetId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TweetCopycat.Models.UserModel", "User")
-                        .WithMany("Likes")
+                        .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("TweetCopycat.Models.UserModel", null)
+                        .WithMany("Likes")
+                        .HasForeignKey("UserModelId");
 
                     b.Navigation("Tweet");
 
