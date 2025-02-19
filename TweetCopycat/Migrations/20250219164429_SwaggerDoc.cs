@@ -5,7 +5,7 @@
 namespace TweetCopycat.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedFollowKey : Migration
+    public partial class SwaggerDoc : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

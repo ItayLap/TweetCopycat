@@ -6,6 +6,7 @@ using TweetCopycat.Data;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +47,12 @@ AddJwtBearer(options =>
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(
+    c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo {Title = "TweetCopycat API",  Version = "v1"});
+    }
+    );
 
 builder.Services.AddCors(Options =>
 {
@@ -67,10 +73,13 @@ app.UseCors("AllowAll");
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
-}
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(
+        c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "TweetCopycat API v1");
+        });
+}
 
 app.UseHttpsRedirection();
 

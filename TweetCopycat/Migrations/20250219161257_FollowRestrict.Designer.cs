@@ -12,8 +12,8 @@ using TweetCopycat.Data;
 namespace TweetCopycat.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250215154427_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250219161257_FollowRestrict")]
+    partial class FollowRestrict
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -373,13 +373,13 @@ namespace TweetCopycat.Migrations
                     b.HasOne("TweetCopycat.Models.UserModel", "Follower")
                         .WithMany()
                         .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TweetCopycat.Models.UserModel", "Following")
                         .WithMany()
                         .HasForeignKey("FollowingId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Follower");

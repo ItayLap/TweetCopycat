@@ -13,9 +13,8 @@ namespace TweetCopycat.Data
         public DbSet<TweetModel> Tweets { get; set; }
         public DbSet<LikeModel> Likes { get; set; }
         public DbSet<FollowModel> Follows { get; set; }
-        /*
-        public DbSet<Notification> Notifications { get; set; }
-        */
+        public DbSet<NotificationModel> Notifications { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -35,13 +34,13 @@ namespace TweetCopycat.Data
                 .HasOne(I => I.Follower)
                 .WithMany()
                 .HasForeignKey(I => I.FollowerId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<FollowModel>()
                 .HasOne(I => I.Following)
                 .WithMany()
                 .HasForeignKey(I => I.FollowingId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
