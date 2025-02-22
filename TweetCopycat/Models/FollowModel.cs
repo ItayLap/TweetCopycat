@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TweetCopycat.Models
 {
@@ -7,9 +8,11 @@ namespace TweetCopycat.Models
         public string Id { get; set; }
 
         [ForeignKey("FollowerId")]
+        [JsonIgnore]
         public virtual UserModel Follower { get; set; }
 
         [ForeignKey("FollowingId")]
+        [JsonIgnore]
         public virtual UserModel Following {  get; set; }
 
         public string FollowerId { get; set; }

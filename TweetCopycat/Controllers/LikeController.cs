@@ -68,7 +68,8 @@ namespace TweetCopycat.Controllers
             await _Context.SaveChangesAsync();
             return Ok("Tweet liked succesfully");
         }
-        [HttpPost("TweetId")]
+
+        [HttpPut("TweetId")]
         [Authorize]
         public async Task<IActionResult> RemoveLike(int TweetId)
         {

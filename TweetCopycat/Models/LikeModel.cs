@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace TweetCopycat.Models
 {
@@ -10,9 +11,11 @@ namespace TweetCopycat.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UserId")]
+        [JsonIgnore]
         public virtual UserModel User { get; set; }
 
         [ForeignKey("TweetId")]
+        [JsonIgnore]
         public virtual TweetModel Tweet { get; set; }
     }
 }

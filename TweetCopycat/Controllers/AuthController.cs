@@ -13,9 +13,9 @@ namespace TweetCopycat.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<UserModel> _userManager;
         private readonly IConfiguration _configuration;
-        public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AuthController(UserManager<UserModel> userManager, IConfiguration configuration)
         {
             _configuration = configuration;
             _userManager = userManager;
@@ -24,7 +24,7 @@ namespace TweetCopycat.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
-            var user = new IdentityUser { UserName = model.Username,Email = model.Email };
+            var user = new UserModel { UserName = model.Username, Email = model.Email, Name = model.Username};
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
@@ -42,7 +42,7 @@ namespace TweetCopycat.Controllers
                 return Unauthorized("Invalid credentials");
             }
             var token = GenerateJwtToken(user);
-            return Ok(new {Token = token});
+            return Ok(new { Token = token });
         }
 
         private string GenerateJwtToken(IdentityUser user)
@@ -52,7 +52,7 @@ namespace TweetCopycat.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), 
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
@@ -60,7 +60,7 @@ namespace TweetCopycat.Controllers
                 claims,
                 expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256));
-            
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

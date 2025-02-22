@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TweetCopycat.Data;
 
@@ -11,9 +12,11 @@ using TweetCopycat.Data;
 namespace TweetCopycat.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250222150821_RemoveLikePut")]
+    partial class RemoveLikePut
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,16 +174,11 @@ namespace TweetCopycat.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserModelId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FollowerId");
 
                     b.HasIndex("FollowingId");
-
-                    b.HasIndex("UserModelId");
 
                     b.ToTable("Follows");
                 });
@@ -413,10 +411,6 @@ namespace TweetCopycat.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("TweetCopycat.Models.UserModel", null)
-                        .WithMany("Follows")
-                        .HasForeignKey("UserModelId");
-
                     b.Navigation("Follower");
 
                     b.Navigation("Following");
@@ -448,7 +442,7 @@ namespace TweetCopycat.Migrations
             modelBuilder.Entity("TweetCopycat.Models.NotificationModel", b =>
                 {
                     b.HasOne("TweetCopycat.Models.UserModel", "User")
-                        .WithMany("Notifications")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -474,11 +468,7 @@ namespace TweetCopycat.Migrations
 
             modelBuilder.Entity("TweetCopycat.Models.UserModel", b =>
                 {
-                    b.Navigation("Follows");
-
                     b.Navigation("Likes");
-
-                    b.Navigation("Notifications");
 
                     b.Navigation("Tweets");
                 });
