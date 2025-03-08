@@ -12,8 +12,8 @@ using TweetCopycat.Data;
 namespace TweetCopycat.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250308150552_Update")]
-    partial class Update
+    [Migration("20250308154908_NoActionOnModelCreating")]
+    partial class NoActionOnModelCreating
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -395,15 +395,15 @@ namespace TweetCopycat.Migrations
             modelBuilder.Entity("TweetCopycat.Models.FollowModel", b =>
                 {
                     b.HasOne("TweetCopycat.Models.UserModel", "Follower")
-                        .WithMany("Followers")
+                        .WithMany()
                         .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TweetCopycat.Models.UserModel", "Following")
-                        .WithMany("Following")
+                        .WithMany()
                         .HasForeignKey("FollowingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Follower");
@@ -459,10 +459,6 @@ namespace TweetCopycat.Migrations
 
             modelBuilder.Entity("TweetCopycat.Models.UserModel", b =>
                 {
-                    b.Navigation("Followers");
-
-                    b.Navigation("Following");
-
                     b.Navigation("Likes");
 
                     b.Navigation("Tweets");

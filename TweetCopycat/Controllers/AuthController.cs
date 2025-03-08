@@ -24,7 +24,10 @@ namespace TweetCopycat.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
-            var user = new UserModel { UserName = model.Username, Email = model.Email, Name = model.Name };
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
+                return BadRequest(new { message = "Email already in use" });
+
+            var user = new UserModel { UserName = model.Username, Email = model.Email, Name = model.Name, ProfilePic = model.ProfilePic };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -38,31 +41,31 @@ namespace TweetCopycat.Controllers
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-                return Unauthorized("Invalid credentials!");
+                return Unauthorized(new { message = "Invalid credentials!" });
 
             var token = GenerateJwtToken(user);
             return Ok(new { token, userId = user.Id });
         }
 
-
         private string GenerateJwtToken(UserModel user)
         {
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id), // ✅ Исправлено
-        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(5),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
 }

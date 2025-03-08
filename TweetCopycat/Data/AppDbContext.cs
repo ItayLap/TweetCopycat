@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using TweetCopycat.Models;
 
 namespace TweetCopycat.Data
@@ -22,7 +21,7 @@ namespace TweetCopycat.Data
                 .HasOne(l => l.Tweet)
                 .WithMany(t => t.Likes)
                 .HasForeignKey(l => l.TweetId)
-                .OnDelete(DeleteBehavior.NoAction); 
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<LikeModel>()
                 .HasOne(l => l.User)
@@ -31,16 +30,16 @@ namespace TweetCopycat.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<FollowModel>()
-            .HasOne(f => f.Follower)
-            .WithMany(u => u.Followers)
-            .HasForeignKey(f => f.FollowerId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(f => f.Follower)
+                .WithMany()
+                .HasForeignKey(f => f.FollowerId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<FollowModel>()
                 .HasOne(f => f.Following)
-                .WithMany(u => u.Following)
+                .WithMany()
                 .HasForeignKey(f => f.FollowingId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }
