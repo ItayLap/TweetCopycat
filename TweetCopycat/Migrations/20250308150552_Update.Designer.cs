@@ -12,15 +12,15 @@ using TweetCopycat.Data;
 namespace TweetCopycat.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250219161257_FollowRestrict")]
-    partial class FollowRestrict
+    [Migration("20250308150552_Update")]
+    partial class Update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -160,8 +160,11 @@ namespace TweetCopycat.Migrations
 
             modelBuilder.Entity("TweetCopycat.Models.FollowModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -201,21 +204,16 @@ namespace TweetCopycat.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserModelId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("TweetId");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserModelId");
-
                     b.ToTable("Likes");
                 });
 
-            modelBuilder.Entity("TweetCopycat.Models.TweetModel", b =>
+            modelBuilder.Entity("TweetCopycat.Models.NotificationModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -232,6 +230,32 @@ namespace TweetCopycat.Migrations
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("TweetCopycat.Models.TweetModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -371,13 +395,13 @@ namespace TweetCopycat.Migrations
             modelBuilder.Entity("TweetCopycat.Models.FollowModel", b =>
                 {
                     b.HasOne("TweetCopycat.Models.UserModel", "Follower")
-                        .WithMany()
+                        .WithMany("Followers")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TweetCopycat.Models.UserModel", "Following")
-                        .WithMany()
+                        .WithMany("Following")
                         .HasForeignKey("FollowingId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -390,22 +414,29 @@ namespace TweetCopycat.Migrations
             modelBuilder.Entity("TweetCopycat.Models.LikeModel", b =>
                 {
                     b.HasOne("TweetCopycat.Models.TweetModel", "Tweet")
-                        .WithMany("Like")
+                        .WithMany("Likes")
                         .HasForeignKey("TweetId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TweetCopycat.Models.UserModel", "User")
-                        .WithMany()
+                        .WithMany("Likes")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TweetCopycat.Models.UserModel", null)
-                        .WithMany("Likes")
-                        .HasForeignKey("UserModelId");
-
                     b.Navigation("Tweet");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("TweetCopycat.Models.NotificationModel", b =>
+                {
+                    b.HasOne("TweetCopycat.Models.UserModel", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -423,11 +454,15 @@ namespace TweetCopycat.Migrations
 
             modelBuilder.Entity("TweetCopycat.Models.TweetModel", b =>
                 {
-                    b.Navigation("Like");
+                    b.Navigation("Likes");
                 });
 
             modelBuilder.Entity("TweetCopycat.Models.UserModel", b =>
                 {
+                    b.Navigation("Followers");
+
+                    b.Navigation("Following");
+
                     b.Navigation("Likes");
 
                     b.Navigation("Tweets");

@@ -1,11 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace TweetCopycat.Models
 {
     public class FollowModel
     {
-        public string Id { get; set; }
+        [Key]
+        public int Id { get; set; } // Изменено на int
+
+        public string FollowerId { get; set; }
+        public string FollowingId { get; set; }
 
         [ForeignKey("FollowerId")]
         [JsonIgnore]
@@ -13,11 +18,7 @@ namespace TweetCopycat.Models
 
         [ForeignKey("FollowingId")]
         [JsonIgnore]
-        public virtual UserModel Following {  get; set; }
-
-        public string FollowerId { get; set; }
-
-        public string FollowingId { get; set; }
+        public virtual UserModel Following { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

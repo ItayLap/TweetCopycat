@@ -1,45 +1,45 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.Mime.MediaTypeNames;
+using System.Reflection.Emit;
 using TweetCopycat.Models;
+
 namespace TweetCopycat.Data
 {
     public class AppDbContext : IdentityDbContext<UserModel>
     {
-        public AppDbContext(DbContextOptions<AppDbContext>options): base(options) 
-        {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        }
         public DbSet<TweetModel> Tweets { get; set; }
         public DbSet<LikeModel> Likes { get; set; }
         public DbSet<FollowModel> Follows { get; set; }
         public DbSet<NotificationModel> Notifications { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<LikeModel>()
-                .HasOne(I => I.Tweet)
-                .WithMany(I => I.Like)
-                .HasForeignKey(I => I.TweetId)
-                .OnDelete(DeleteBehavior.NoAction);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<LikeModel>()
-                .HasOne(I => I.User)
-                .WithMany()
-                .HasForeignKey(I => I.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<LikeModel>()
+                .HasOne(l => l.Tweet)
+                .WithMany(t => t.Likes)
+                .HasForeignKey(l => l.TweetId)
+                .OnDelete(DeleteBehavior.NoAction); 
 
-            modelBuilder.Entity<FollowModel>()
-                .HasOne(I => I.Follower)
-                .WithMany()
-                .HasForeignKey(I => I.FollowerId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<LikeModel>()
+                .HasOne(l => l.User)
+                .WithMany(u => u.Likes)
+                .HasForeignKey(l => l.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<FollowModel>()
-                .HasOne(I => I.Following)
-                .WithMany()
-                .HasForeignKey(I => I.FollowingId)
+            builder.Entity<FollowModel>()
+            .HasOne(f => f.Follower)
+            .WithMany(u => u.Followers)
+            .HasForeignKey(f => f.FollowerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<FollowModel>()
+                .HasOne(f => f.Following)
+                .WithMany(u => u.Following)
+                .HasForeignKey(f => f.FollowingId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
